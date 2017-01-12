@@ -1152,6 +1152,20 @@ bool handle_command(struct vehicle_status_s *status_local, const struct safety_s
 		}
 	}
 	break;
+
+	case vehicle_command_s::VEHICLE_CMD_POSCTRL_MODE_STANDARD:
+	case vehicle_command_s::VEHICLE_CMD_POSCTRL_MODE_CIRCLE: {
+		if (TRANSITION_DENIED != main_state_transition(&status, commander_state_s::MAIN_STATE_POSCTL, main_state_prev, &status_flags, &internal_state)) {
+			mavlink_and_console_log_info(&mavlink_log_pub, "Position mode");
+			cmd_result = vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED;
+
+		} else {
+			mavlink_log_critical(&mavlink_log_pub, "Position mode denied");
+			cmd_result = vehicle_command_s::VEHICLE_CMD_RESULT_TEMPORARILY_REJECTED;
+		}
+	}
+	break;
+
 	case vehicle_command_s::VEHICLE_CMD_CUSTOM_0:
 	case vehicle_command_s::VEHICLE_CMD_CUSTOM_1:
 	case vehicle_command_s::VEHICLE_CMD_CUSTOM_2:
