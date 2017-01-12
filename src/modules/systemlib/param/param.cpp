@@ -63,13 +63,9 @@
 
 #include <HashMap/hashmap/HashMap.h>
 
-//extern "C"
-//{
-
 #include "systemlib/param/param.h"
 #include "systemlib/uthash/utarray.h"
 #include "systemlib/bson/tinybson.h"
-//}
 
 #if !defined(PARAM_NO_ORB)
 # include "uORB/uORB.h"
@@ -151,7 +147,7 @@ get_param_info_count(void)
 FLASH_PARAMS_EXPOSE UT_array        *param_values;
 
 /** array info for the modified parameters array */
-FLASH_PARAMS_EXPOSE const UT_icd    param_icd = {sizeof(struct param_wbuf_s), NULL, NULL, NULL};
+FLASH_PARAMS_EXPOSE extern const UT_icd    param_icd = {sizeof(struct param_wbuf_s), NULL, NULL, NULL};
 
 #if !defined(PARAM_NO_ORB)
 /** parameter update topic handle */
@@ -785,7 +781,7 @@ param_save_default(void)
 
 	if (fd < 0) {
 		warn("failed to open param file: %s", filename);
-		return ERROR;
+		return PX4_ERROR;
 	}
 
 	res = 1;
