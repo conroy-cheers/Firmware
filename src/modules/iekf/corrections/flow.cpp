@@ -70,8 +70,9 @@ void IEKF::correctFlow(const optical_flow_s *msg)
 			    _x(X::q_nb_0), _x(X::q_nb_1),
 			    _x(X::q_nb_2), _x(X::q_nb_3));
 
-	Vector3f omega_nb_b(
-		_u(U::omega_nb_bX), _u(U::omega_nb_bY), _u(U::omega_nb_bZ));
+	Vector3f gyro_bias_b(_x(X::gyro_bias_bX), _x(X::gyro_bias_bY), _x(X::gyro_bias_bZ));
+	Vector3f omega_nb_b(_u(U::omega_nb_bX), _u(U::omega_nb_bY), _u(U::omega_nb_bZ));
+	Vector3f omega_nb_b_corrected = omega_nb_b - gyro_bias_b;
 
 	float vel_N = _x(X::vel_N);
 	float vel_E = _x(X::vel_E);
@@ -80,9 +81,9 @@ void IEKF::correctFlow(const optical_flow_s *msg)
 	// expected measurement
 	Vector<float, Y_flow::n> yh;
 	yh(0) = - (C_nb(0, 1) * vel_N + C_nb(1, 1) * vel_E
-		   + C_nb(2, 1) * vel_D) * C_nb(2, 2) / agl + omega_nb_b(1);
+		   + C_nb(2, 1) * vel_D) * C_nb(2, 2) / agl + omega_nb_b_corrected(1);
 	yh(1) = - (C_nb(0, 0) * vel_N + C_nb(1, 0) * vel_E
-		   + C_nb(2, 0) * vel_D) * C_nb(2, 2) / agl + omega_nb_b(0);
+		   + C_nb(2, 0) * vel_D) * C_nb(2, 2) / agl + omega_nb_b_corrected(0);
 
 	// measurement
 	Vector<float, Y_flow::n> y;

@@ -136,24 +136,24 @@ IEKF::IEKF() :
 	setX(_x0);
 
 	// initialize covariance
-	_P0Diag(Xe::rot_N) = 1e-3f;
-	_P0Diag(Xe::rot_E) = 1e-3f;
-	_P0Diag(Xe::rot_D) = 1e-3f;
-	_P0Diag(Xe::vel_N) = 1e-1;
-	_P0Diag(Xe::vel_E) = 1e-1;
-	_P0Diag(Xe::vel_D) = 1e-1;
-	_P0Diag(Xe::gyro_bias_N) = 1e-6f;
-	_P0Diag(Xe::gyro_bias_E) = 1e-6f;
-	_P0Diag(Xe::gyro_bias_D) = 1e-6f;
-	_P0Diag(Xe::accel_scale) = 1e-6f;
-	_P0Diag(Xe::pos_N) = 1e-1;
-	_P0Diag(Xe::pos_E) = 1e-1;
-	_P0Diag(Xe::asl) = 1e-1;
-	_P0Diag(Xe::terrain_asl) = 1e-1;
-	_P0Diag(Xe::baro_bias) = 1e-1;
-	_P0Diag(Xe::wind_N) = 1e-1;
-	_P0Diag(Xe::wind_E) = 1e-1;
-	_P0Diag(Xe::wind_D) = 1e-1;
+	_P0Diag(Xe::rot_N) = 0;
+	_P0Diag(Xe::rot_E) = 0;
+	_P0Diag(Xe::rot_D) = 0;
+	_P0Diag(Xe::vel_N) = 0;
+	_P0Diag(Xe::vel_E) = 0;
+	_P0Diag(Xe::vel_D) = 0;
+	_P0Diag(Xe::gyro_bias_N) = 0;
+	_P0Diag(Xe::gyro_bias_E) = 0;
+	_P0Diag(Xe::gyro_bias_D) = 0;
+	_P0Diag(Xe::accel_scale) = 0;
+	_P0Diag(Xe::pos_N) = 0;
+	_P0Diag(Xe::pos_E) = 0;
+	_P0Diag(Xe::asl) = 0;
+	_P0Diag(Xe::terrain_asl) = 0;
+	_P0Diag(Xe::baro_bias) = 0;
+	_P0Diag(Xe::wind_N) = 0;
+	_P0Diag(Xe::wind_E) = 0;
+	_P0Diag(Xe::wind_D) = 0;
 	setP(diag(_P0Diag));
 
 
@@ -426,7 +426,7 @@ void IEKF::predict(float dt)
 	Q(Xe::pos_N, Xe::pos_N) = pos_var_xy;
 	Q(Xe::pos_E, Xe::pos_E) = pos_var_xy;
 	Q(Xe::asl, Xe::asl) = pos_var_z;
-	Q(Xe::terrain_asl, Xe::terrain_asl) = 1e-1f;
+	Q(Xe::terrain_asl, Xe::terrain_asl) = 0;
 	Q(Xe::baro_bias, Xe::baro_bias) = baro_var_rrw;
 	//Q(Xe::wind_N, Xe::wind_N) = 1e-2f;
 	//Q(Xe::wind_E, Xe::wind_E) = 1e-2f;
@@ -509,20 +509,20 @@ void IEKF::predict(float dt)
 	//ROS_INFO("P:");
 	//_P.diag().print();
 
-	//ROS_INFO("");
-	//ROS_INFO("rot (deg) stddev: %10.4f %10.4f %10.4f",
-	//double(rad2degf*sqrtf(_P(Xe::rot_N, Xe::rot_N))),
-	//double(rad2degf*sqrtf(_P(Xe::rot_E, Xe::rot_E))),
-	//double(rad2degf*sqrtf(_P(Xe::rot_D, Xe::rot_D))));
-	//ROS_INFO("pos (m) stddev: %10.4f %10.4f %10.4f",
-	//double(sqrtf(_P(Xe::pos_N, Xe::pos_N))),
-	//double(sqrtf(_P(Xe::pos_E, Xe::pos_E))),
-	//double(sqrtf(_P(Xe::asl, Xe::asl))));
-	//ROS_INFO("vel (m/s) stddev: %10.4f %10.4f %10.4f",
-	//double(sqrtf(_P(Xe::vel_N, Xe::vel_N))),
-	//double(sqrtf(_P(Xe::vel_E, Xe::vel_E))),
-	//double(sqrtf(_P(Xe::vel_D, Xe::vel_D))));
-	//ROS_INFO("baro bias stddev (m) %10.4f", double(sqrtf(_P(Xe::baro_bias, Xe::baro_bias))));
+	ROS_INFO("");
+	ROS_INFO("rot (deg) stddev: %10.4f %10.4f %10.4f",
+		 double(rad2degf * sqrtf(_P(Xe::rot_N, Xe::rot_N))),
+		 double(rad2degf * sqrtf(_P(Xe::rot_E, Xe::rot_E))),
+		 double(rad2degf * sqrtf(_P(Xe::rot_D, Xe::rot_D))));
+	ROS_INFO("pos (m) stddev: %10.4f %10.4f %10.4f",
+		 double(sqrtf(_P(Xe::pos_N, Xe::pos_N))),
+		 double(sqrtf(_P(Xe::pos_E, Xe::pos_E))),
+		 double(sqrtf(_P(Xe::asl, Xe::asl))));
+	ROS_INFO("vel (m/s) stddev: %10.4f %10.4f %10.4f",
+		 double(sqrtf(_P(Xe::vel_N, Xe::vel_N))),
+		 double(sqrtf(_P(Xe::vel_E, Xe::vel_E))),
+		 double(sqrtf(_P(Xe::vel_D, Xe::vel_D))));
+	ROS_INFO("baro bias stddev (m) %10.4f", double(sqrtf(_P(Xe::baro_bias, Xe::baro_bias))));
 }
 
 Vector<float, X::n> IEKF::applyErrorCorrection(const Vector<float, Xe::n> &d_xe)
