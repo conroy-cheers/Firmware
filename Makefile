@@ -260,11 +260,6 @@ check_%:
 	@echo
 	$(call colorecho,"Building" $(subst check_,,$@))
 	@$(MAKE) --no-print-directory $(subst check_,,$@)
-	@mkdir -p Binaries
-	@mkdir -p Meta/$(subst check_,,$@)
-	@cp build_$(subst check_,,$@)/*.xml Meta/$(subst check_,,$@) 2> /dev/null || :
-	@find build_$(subst check_,,$@)/src/firmware -type f -name 'nuttx-*-default.px4' -exec cp "{}" Binaries \; 2> /dev/null || :
-	@rm -rf build_$(subst check_,,$@)
 	@echo
 
 unittest: posix_sitl_default
@@ -301,7 +296,13 @@ clang-tidy:
 	@$(SRC_DIR)/Tools/clang-tool.sh -b build_posix_sitl_default -t clang-tidy
 
 package_firmware:
-	@zip --junk-paths Firmware.zip `find Binaries/. -name \*.px4`
+	@zip --junk-paths Firmware.zip `find . -name \*.px4`
+
+package_firmware_upload: package_firmware
+	${SRC_DIR}/Tools/s3put.sh Firmware.zip
+
+qgc_firmware_upload: qgc_firmware
+	@find ${SRC_DIR}/build_* -name "*.px4" -exec ${SRC_DIR}/Tools/s3put.sh "{}" \;
 
 clean:
 	@rm -rf build_*/

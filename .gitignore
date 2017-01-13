@@ -20,8 +20,6 @@
 Archives/*
 Build/*
 Testing/
-Binaries/*
-Meta/*
 build/*
 build_*/
 core
@@ -75,7 +73,6 @@ GTAGS
 # uavcan firmware
 ROMFS/px4fmu_common/uavcan/
 vectorcontrol/
-
 
 # CLion ignores
 .idea
